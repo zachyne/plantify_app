@@ -1,0 +1,47 @@
+import 'package:flutter/material.dart';
+import 'package:plantify_app/data/import_csv.dart';
+import '../models/plant.dart';
+
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  late Future<List<Plant>> plants;
+
+  @override
+  void initState() {
+    super.initState();
+    plants = loadCSV(); // Call your CSV loading function
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Plant List')),
+      body: FutureBuilder<List<Plant>>(
+        future: plants,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            final plantList = snapshot.data!;
+            return ListView.builder(
+              itemCount: plantList.length,
+              itemBuilder: (context, index) {
+                final plant = plantList[index];
+                return ListTile(
+                  title: Text(plant.plantNameEng),
+                  subtitle: Text(plant.plantDes),
+                );
+              },
+            );
+          }
+        },
+      ),
+    );
+  }
+}

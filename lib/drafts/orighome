@@ -1,0 +1,160 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:plantify_app/components/app_bar.dart';
+import 'package:plantify_app/data/import_csv.dart';
+import 'package:plantify_app/models/plant.dart';
+import 'package:plantify_app/models/soil.dart';
+import 'package:plantify_app/screens/about_page.dart';
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: const PlantifyAppBar(title: "Plantify"),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/leaves_background.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'What do you want to do?',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 20.sp, // Responsive font size
+                    color: const Color(0xFF163020),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 30.h), // Responsive height
+                // Elevated Buttons
+                ..._buildButtons(context),
+                SizedBox(height: 15.h),
+                Text(
+                  'or read about',
+                  style: TextStyle(
+                    fontSize: 15.sp, // Responsive font size
+                    color: const Color(0xFF163020),
+                  ),
+                ),
+                SizedBox(height: 15.h),
+                ..._buildReadAboutButtons(context),
+                SizedBox(height: 150.h),
+                _buildAboutUsRow(context),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildButtons(BuildContext context) {
+    return [
+      _buildElevatedButton(context, 'Scan Soil'),
+      SizedBox(height: 5.h),
+      _buildElevatedButton(context, 'Upload Soil'),
+    ];
+  }
+
+  List<Widget> _buildReadAboutButtons(BuildContext context) {
+    return [
+      _buildElevatedButton(context, 'Soils'),
+      SizedBox(height: 5.h),
+      _buildElevatedButton(context, 'Plants'),
+    ];
+  }
+
+  Widget _buildElevatedButton(BuildContext context, String label) {
+    return SizedBox(
+      width: 150.w,
+      height: 40.h,
+      child: ElevatedButton(
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.all<Color>(
+            const Color(0xFF163020),
+          ),
+        ),
+        onPressed: () async {
+          if (label == 'Soils') {
+            Navigator.of(context).push(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    AboutPage(soils: soils), // Pass only soils
+                transitionDuration: const Duration(seconds: 0),
+              ),
+            );
+          } else if (label == 'Plants') {
+            // Import the plants from CSV
+            List<Plant> plants = await loadCSV();
+
+            // Navigate to AboutPage with the plants data
+            Navigator.of(context).push(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    AboutPage(plants: plants), // Pass only plants
+                transitionDuration: const Duration(seconds: 0),
+              ),
+            );
+          }
+        },
+        child: Text(
+          label,
+          style: TextStyle(
+            color: const Color(0xFFEEF0E5),
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.bold,
+            fontSize: 13.sp,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAboutUsRow(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          'Want to know more ',
+          style: TextStyle(
+            color: Color(0xFF163020),
+          ),
+        ),
+        InkWell(
+          onTap: () {
+            Navigator.of(context).push(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    const HomePage(),
+                transitionDuration: const Duration(seconds: 0),
+              ),
+            );
+          },
+          child: const Text(
+            'about us',
+            style: TextStyle(
+              color: Color(0xFF163020),
+              decoration: TextDecoration.underline,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const Text(
+          '?',
+          style: TextStyle(
+            color: Color(0xFF163020),
+          ),
+        ),
+      ],
+    );
+  }
+}

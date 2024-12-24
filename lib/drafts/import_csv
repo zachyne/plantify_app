@@ -1,0 +1,19 @@
+import 'package:csv/csv.dart';
+import 'package:flutter/services.dart';
+import 'package:plantify_app/models/plant.dart';
+import 'package:plantify_app/models/soil.dart';
+
+Future<List<Plant>> loadCSV() async {
+  final rawData = await rootBundle.loadString('assets/plant_data.csv');
+  List<List<dynamic>> listData = const CsvToListConverter().convert(rawData);
+
+  return listData.map((row) => Plant.fromCSV(row)).toList();
+}
+
+List<Plant> getSuitablePlantsForSoil(Soil soil, List<Plant> plants) {
+  return plants.where((plant) {
+    final suitableSoilIds = plant.suitableSoil.split(',');
+    return suitableSoilIds.contains(soil.id.toString());
+  }).toList();
+}
+

@@ -1,0 +1,6 @@
+Chalky Soil
+Clay Soil
+Loamy Soil
+Peaty Soil
+Sandy Soil
+Silty Soil
